@@ -2,9 +2,9 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-const UID = 'u-s4t2ud-19980a5b8fe8b9e7250f2b1239c325f3f6579c38cc696313f5c761013195ef93';
-const SECRET = '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';
-const redirect_uri = "https://mobile-test-snowy.vercel.app/party";
+const UID = 'u-s4t2ud-ff7aa4e44f7e531dc6eb95c1bf10a691270038d8b7508d6f07cd4daaac81ca35';
+const SECRET = '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';
+const redirect_uri = "https://mobile-test-snowy.vercel.app/";
 
 async function getAuthorizationCode() {
   const auth_url = `https://api.intra.42.fr/oauth/authorize?client_id=${UID}&response_type=code&redirect_uri=${redirect_uri}`;

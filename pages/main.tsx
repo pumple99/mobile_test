@@ -53,61 +53,61 @@ const Main: React.FC = () => {
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 4,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 5,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 6,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 7,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 8,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 9,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 10,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 11,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 12,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
         },
         {
-            id: 3,
+            id: 13,
             title: "맛있는 거 드실 분",
             currentPeople: 1,
             maxPeople: 100
@@ -131,7 +131,7 @@ const Main: React.FC = () => {
         </Header>
         <div className={styles.pad}>
             {cards.map(card => (
-        <UserCard card={card} />
+        <UserCard card={card} key={card.id}/>
     ))}
         </div>
         </>

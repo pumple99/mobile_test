@@ -16,8 +16,8 @@ const tailLayout = {
 const Party: React.FC = () => {
   const [form] = Form.useForm();
 
-  const onChange = (value: any) => {
-    console.log('changed', value);
+  const onChange = (checked: any) => {
+    console.log('changed', checked);
   };
 
   const onFinish = (values: any) => {
@@ -43,16 +43,19 @@ const Party: React.FC = () => {
       form={form}
       name="control-hooks"
       onFinish={onFinish}
+      initialValues={{
+        ["partyNum"]: 1
+      }}
       className={styles.form}
     >
       <Form.Item name="partyName" label="파티 이름" rules={[{ required: true }]}>
         <Input placeholder='파티 이름을 적어주세요'/>
       </Form.Item>
-      <Form.Item name="eatSeperate" rules={[{ required: false }]}>
+      <Form.Item name="eatSeperate" rules={[{ required: false }]} valuePropName="checked">
         <Checkbox defaultChecked={false}>따로 먹을게요</Checkbox>
       </Form.Item>
       <Form.Item name="partyNum" label="파티 인원" rules={[{ required: true }]}>
-        <InputNumber min={1} max={100} defaultValue={1} onChange={onChange} />
+        <InputNumber min={1} max={100} onChange={onChange} />
       </Form.Item>
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">

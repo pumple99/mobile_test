@@ -27,7 +27,7 @@ const items: MenuProps['items'] = [
 function UserCard({ card } : any){
     return (
         <Card title={card.title}>
-
+            
         </Card>
     );
 }
@@ -37,7 +37,7 @@ const Main: React.FC = () => {
     const cards = [
         {
             id: 1,
-            title: "1.아무거나 드실 분",
+            title: "1.아무거나",
             currentPeople: 5,
             maxPeople: 10
         },

@@ -1,9 +1,7 @@
 import { Button, Form, Input, Select, Checkbox, InputNumber } from 'antd';
-import React, {useState} from 'react';
+import React from 'react';
 import styles from '../styles/party.module.css';
 import axios from 'axios';
-
-React.useLayoutEffect = React.useEffect; //워닝 제거용
 
 const { Option } = Select;
 
@@ -16,23 +14,15 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-const Party: React.FC = () => {
+const Group: React.FC = () => {
   const [form] = Form.useForm();
-  const totalPrice = 3000;
-  const peopleBefore = 3;
-  const [values, setValues] = useState({peopleNum: peopleBefore + 1, expectedPrice: totalPrice/(peopleBefore + 1)});
 
-  const {peopleNum, expectedPrice} = values;
-
-  const onChange = () => {
-    setValues({
-      peopleNum: peopleBefore + form.getFieldValue("partyNum"),
-      expectedPrice: Math.round(totalPrice / (peopleBefore + form.getFieldValue("partyNum")))
-    });
+  const onChange = (checked: any) => {
+    console.log('changed', checked);
   };
 
   const onFinish = () => {
-    let body = form.getFieldsValue(['partyTitle', 'joinable', 'partyNum']);
+    let body = form.getFieldsValue(['partyTitle', 'joinable']);
     axios.post("http://localhost:5000", body);
   };
 
@@ -48,7 +38,7 @@ const Party: React.FC = () => {
     <>
     <h1 className={styles.title}>파티 추가</h1>
     <div style={{textAlign:'right', paddingRight:'20%'}}>
-        예상 배달 팁: {totalPrice}/{peopleNum}={expectedPrice}원
+        예상 배달 팁: ???원
     </div>
     <Form
       {...layout}
@@ -78,7 +68,7 @@ const Party: React.FC = () => {
           취소
         </Button>
         <Button type="link" htmlType="button" onClick={onFill}>
-          자동 채우기
+          기본값 채우기
         </Button>
       </Form.Item>
     </Form>
@@ -86,4 +76,4 @@ const Party: React.FC = () => {
   );
 };
 
-export default Party;
+export default Group;

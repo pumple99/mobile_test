@@ -3,8 +3,6 @@ import React, {useState} from 'react';
 import styles from '../styles/party.module.css';
 import axios from 'axios';
 
-React.useLayoutEffect = React.useEffect; //워닝 제거용
-
 const { Option } = Select;
 
 const layout = {
@@ -18,16 +16,19 @@ const tailLayout = {
 
 const Party: React.FC = () => {
   const [form] = Form.useForm();
-  const totalPrice = 3000;
+  const totalPrice = undefined;
   const peopleBefore = 3;
-  const [values, setValues] = useState({peopleNum: peopleBefore + 1, expectedPrice: totalPrice/(peopleBefore + 1)});
+  const [values, setValues] = useState({peopleNum: peopleBefore + 1,
+    expectedPrice: totalPrice != undefined ? totalPrice/(peopleBefore + 1) : undefined});
+  const maxP = 20 - peopleBefore;
 
   const {peopleNum, expectedPrice} = values;
 
   const onChange = () => {
     setValues({
       peopleNum: peopleBefore + form.getFieldValue("partyNum"),
-      expectedPrice: Math.round(totalPrice / (peopleBefore + form.getFieldValue("partyNum")))
+      expectedPrice: totalPrice != undefined ?
+      Math.round(totalPrice / (peopleBefore + form.getFieldValue("partyNum"))) : undefined
     });
   };
 
@@ -68,7 +69,7 @@ const Party: React.FC = () => {
         <Checkbox defaultChecked={false}>따로 먹을게요</Checkbox>
       </Form.Item>
       <Form.Item name="partyNum" label="파티 인원" rules={[{ required: true }]}>
-        <InputNumber min={1} max={100} onChange={onChange} />
+        <InputNumber min={1} max={maxP} onChange={onChange} />
       </Form.Item>
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">

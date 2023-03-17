@@ -1,9 +1,10 @@
-import { Button, Form, Input, Select, Checkbox, InputNumber } from 'antd';
-import React from 'react';
+import { Button, Form, Input, Space, InputNumber, TimePicker, } from 'antd';
+import React, { useState } from 'react';
 import styles from '../styles/party.module.css';
 import axios from 'axios';
+import {Dayjs} from 'dayjs';
 
-const { Option } = Select;
+const { TextArea } = Input;
 
 const layout = {
   labelCol: { span: 8 },
@@ -16,59 +17,76 @@ const tailLayout = {
 
 const Group: React.FC = () => {
   const [form] = Form.useForm();
+  const [unixTime, setUnixTime] = useState(0);
 
-  const onChange = (checked: any) => {
-    console.log('changed', checked);
+  const onChange = (value: Dayjs | null, dateString: string) => {
+    if (value != null)
+      setUnixTime(value.valueOf());
   };
 
   const onFinish = () => {
-    let body = form.getFieldsValue(['partyTitle', 'joinable']);
-    axios.post("http://localhost:5000", body);
+    let body = form.getFieldsValue(['title', 'menu', 'deliveryPrice', 'currentPeopleNum', 'maximumPeopleNum'
+    , 'content']);
+    body.matchingEndTime = unixTime;
+    body.available = true;
+    let time = Date.now();
+    body.createdAt = time;
+    body.updatedAt = time;
+    body.intraId = 'default';
+    console.log(body, body.matchingEndTime);
+    // axios.post("http://localhost:5000", body);
   };
 
   const onReset = () => {
     form.resetFields();
   };
 
-  const onFill = () => {
-    form.setFieldsValue({ partyTitle: '???의 파티', partyNum: 1});
-  };
-
   return (
     <>
-    <h1 className={styles.title}>파티 추가</h1>
-    <div style={{textAlign:'right', paddingRight:'20%'}}>
-        예상 배달 팁: ???원
-    </div>
+    <h1 className={styles.title}>배달 그룹 만들기</h1>
     <Form
       {...layout}
       form={form}
       name="control-hooks"
       onFinish={onFinish}
       initialValues={{
-        ["joinable"]: false,
-        ["partyNum"]: 1
+        ["title"]: '같이 배달 시키실 분~~',
+        ["menu"]: "미정",
+        ["currentPeopleNum"]: 1,
+        ["maximumPeopleNum"]: 300,
+        ['content']: "",
       }}
       className={styles.form}
     >
-      <Form.Item name="partyTitle" label="파티 이름" rules={[{ required: true }]}>
-        <Input placeholder='파티 이름을 적어주세요'/>
+      <Form.Item name="title" label="배달 그룹명" rules={[{ required: true }]}>
+        <Input placeholder='그룹 이름을 적어주세요'/>
       </Form.Item>
-      <Form.Item name="joinable" rules={[{ required: false }]} valuePropName="checked">
-        <Checkbox defaultChecked={false}>따로 먹을게요</Checkbox>
+      <Form.Item name="menu" label="메뉴 혹은 지점" rules={[{ required: true }]}>
+        <Input placeholder='메뉴 또는 지점을 적어주세요'/>
       </Form.Item>
-      <Form.Item name="partyNum" label="파티 인원" rules={[{ required: true }]}>
-        <InputNumber min={1} max={100} onChange={onChange} />
+      <Form.Item name="deliveryPrice" label="예상 배달 팁" rules={[{ required: false }]}>
+        <InputNumber min={0} max={100000} />
+      </Form.Item>
+      <Space direction="horizontal">
+        <Form.Item name="currentPeopleNum" label="현재 인원" rules={[{ required: true }]}>
+          <InputNumber min={0} max={100} />
+        </Form.Item>
+        <Form.Item name="maximumPeopleNum" label="최대 인원" rules={[{ required: true }]}>
+          <InputNumber min={0} max={300} />
+        </Form.Item>
+      </Space>
+      <Form.Item name="matchingEndTime" label="마감시간" rules={[{ required: true }]}>
+        <TimePicker format="HH:mm" showNow={true} onChange={onChange}/>
+      </Form.Item>
+      <Form.Item name="content" label="하고 싶은 말" rules={[{ required: false }]}>
+      <TextArea rows={4} placeholder="200자 제한" maxLength={200} />
       </Form.Item>
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">
           제출
         </Button>
-        <Button htmlType="button" danger onClick={onReset}>
+        <Button htmlType="button" danger href="/">
           취소
-        </Button>
-        <Button type="link" htmlType="button" onClick={onFill}>
-          기본값 채우기
         </Button>
       </Form.Item>
     </Form>

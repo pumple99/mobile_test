@@ -1,10 +1,11 @@
-import { Layout, Button, Switch, Space, Dropdown, Collapse, Table, Modal, FloatButton, Input } from "antd";
+import { Layout, Button, Switch, Space, Dropdown, Collapse, Table, Modal, 
+    FloatButton, Input, Form, Checkbox, InputNumber } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import React, {useState} from 'react';
 import styles from '../styles/header.module.css';
 import {FormOutlined, UserOutlined} from '@ant-design/icons';
-import Party from './party';
+import axios from "axios";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -65,6 +66,16 @@ const items: MenuProps['items'] = [
     },
 ];
 
+const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  };
+  
+const tailLayout = {
+wrapperCol: { offset: 8, span: 16 },
+};
+
+
 function UserComment({ comment } : any){
     return (
         <p style={{wordBreak: "break-all"}}>{comment.intraId}: {comment.content}</p>
@@ -75,17 +86,50 @@ function UserCard({ card } : any){
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [form] = Form.useForm();
+    const totalPrice = card.deliveryPrice;
+    const peopleBefore = card.currentPeople;
+    const [values, setValues] = useState({peopleNum: peopleBefore + 1,
+      expectedPrice: totalPrice != undefined ? Math.round(totalPrice/(peopleBefore + 1)) : undefined});
+    const maxP = card.maxPeople - peopleBefore;
+    const {peopleNum, expectedPrice} = values;
+
+    const [text, setText] = useState("");
+
     const showModal = () => {
         setIsModalOpen(true);
     };
 
     const handleOk = () => {
+        //party를 post 하는 부분
+        let partyBody = form.getFieldsValue(["partyTitle", "joinable", "partyNum"]);
         setIsModalOpen(false);
     };
 
     const handleCancel = () => {
         setIsModalOpen(false);
     };
+
+    const onChange = () => {
+      setValues({
+        peopleNum: peopleBefore + form.getFieldValue("partyNum"),
+        expectedPrice: totalPrice != undefined ?
+        Math.round(totalPrice / (peopleBefore + form.getFieldValue("partyNum"))) : undefined
+      });
+    };
+
+    function onCommentSubmit() {
+        //comment를 post 하는 부분
+        let commentBody = {
+            content: text,
+        };
+    }
+
+    function onTextChange(e : any) {
+        setText(e.target.value);
+        console.log(e.target.value);
+    }
+
     //어떤 호출로 파티들을 받아옴
     const parties: DataType[] = [
         {
@@ -131,7 +175,30 @@ function UserCard({ card } : any){
                             그룹에 참여하기
                         </Button>
                         <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                            <Party />
+                            <h1 className={styles.title}>파티 추가</h1>
+                            <div style={{textAlign:'right', paddingRight:'20%'}}>
+                                예상 배달 팁: {totalPrice}/{peopleNum}={expectedPrice}원
+                            </div>
+                            <Form
+                            {...layout}
+                            form={form}
+                            name="control-hooks"
+                            initialValues={{
+                                ["joinable"]: false,
+                                ["partyNum"]: 1
+                            }}
+                            className={styles.form}
+                            >
+                            <Form.Item name="partyTitle" label="파티 이름" rules={[{ required: true }]}>
+                                <Input placeholder='파티 이름을 적어주세요'/>
+                            </Form.Item>
+                            <Form.Item name="joinable" rules={[{ required: false }]} valuePropName="checked">
+                                <Checkbox defaultChecked={false}>따로 먹을게요</Checkbox>
+                            </Form.Item>
+                            <Form.Item name="partyNum" label="파티 인원" rules={[{ required: true }]}>
+                                <InputNumber min={1} max={maxP} onChange={onChange} />
+                            </Form.Item>
+                            </Form>
                         </Modal>
                     </Space>
                     <p style={{wordBreak: "break-all"}}>{card.content}</p>
@@ -143,8 +210,8 @@ function UserCard({ card } : any){
                                 <UserComment comment={comment} key={comment.id}/>
                             ))}
                             <Space.Compact block>
-                                <TextArea placeholder="100자 제한" maxLength={100} />
-                                <Button type="primary">Submit</Button>
+                                <TextArea placeholder="100자 제한" maxLength={100} onChange={onTextChange}/>
+                                <Button type="primary" onClick={onCommentSubmit}>Submit</Button>
                             </Space.Compact>
                         </Panel>
                     </Collapse>
@@ -154,6 +221,11 @@ function UserCard({ card } : any){
 }
 
 const Main: React.FC = () => {
+    const [switchValue, setSwitchValue] = useState(true);
+
+    const handleSwitchChange = (checked: boolean) => {
+        setSwitchValue(checked);
+    };
 
     const cards = [
         {
@@ -162,10 +234,9 @@ const Main: React.FC = () => {
             currentPeople: 5,
             maxPeople: 10,
             menu: "미정",
-            deliveryPrice: 3000,
+            deliveryPrice: 4000,
             content: "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
             available: true,
-
         },
         {
             id: 2,
@@ -178,13 +249,18 @@ const Main: React.FC = () => {
             available: false,
         },
     ];
+    let availableCard = Array();
+    let unavailableCard = Array();
+    cards.map(c => (
+        c.available ? availableCard.push(c) : unavailableCard.push(c)
+    ));
     
     return (
         <>
         <Header className={styles.headerStyle}>
             <Space className={styles.headerSpace}direction="horizontal">
                 <Button href="/group" icon={<FormOutlined />}>글 쓰기</Button>
-                <Switch checkedChildren="모집 중" unCheckedChildren="마감" defaultChecked />
+                <Switch checkedChildren="모집 중" unCheckedChildren="마감" defaultChecked={true} onChange={handleSwitchChange}/>
                 <Dropdown menu={{ items }} trigger={['click']}>
                     <a onClick={(e) => e.preventDefault()}>
                         <Space>
@@ -197,9 +273,8 @@ const Main: React.FC = () => {
         <FloatButton icon={<FormOutlined />} tooltip={<div>그룹 생성하기</div>} 
         shape="square" type="primary" href="/group" description="그룹 생성"/>
         <div className={styles.pad}>
-            {cards.map(card => (
-                <UserCard card={card} key={card.id}/>
-            ))}
+            {switchValue ? availableCard.map(card => (<UserCard card={card} key={card.id}/>))
+            : unavailableCard.map(card => (<UserCard card={card} key={card.id}/>))}
         </div>
         </>
         );

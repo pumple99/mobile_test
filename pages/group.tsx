@@ -18,10 +18,16 @@ const tailLayout = {
 const Group: React.FC = () => {
   const [form] = Form.useForm();
   const [unixTime, setUnixTime] = useState(0);
+  const [maxPeople, setMaxPeople] = useState(300);
 
-  const onChange = (value: Dayjs | null, dateString: string) => {
+  const onTimeChange = (value: Dayjs | null, dateString: string) => {
     if (value != null)
       setUnixTime(value.valueOf());
+  };
+
+  function onMaxPeopleChange(value : number | null) {
+    if (value != null)
+      setMaxPeople(value);
   };
 
   const onFinish = () => {
@@ -69,14 +75,14 @@ const Group: React.FC = () => {
       </Form.Item>
       <Space direction="horizontal">
         <Form.Item name="currentPeopleNum" label="현재 인원" rules={[{ required: true }]}>
-          <InputNumber min={0} max={100} />
+          <InputNumber min={0} max={maxPeople} />
         </Form.Item>
         <Form.Item name="maximumPeopleNum" label="최대 인원" rules={[{ required: true }]}>
-          <InputNumber min={0} max={300} />
+          <InputNumber min={0} max={300} onChange={onMaxPeopleChange}/>
         </Form.Item>
       </Space>
       <Form.Item name="matchingEndTime" label="마감시간" rules={[{ required: true }]}>
-        <TimePicker format="HH:mm" showNow={true} onChange={onChange}/>
+        <TimePicker format="HH:mm" showNow={true} onChange={onTimeChange}/>
       </Form.Item>
       <Form.Item name="content" label="하고 싶은 말" rules={[{ required: false }]}>
       <TextArea rows={4} placeholder="200자 제한" maxLength={200} />

@@ -1,9 +1,10 @@
-import { Layout, Button, Switch, Space, Dropdown, Collapse, Table } from "antd";
+import { Layout, Button, Switch, Space, Dropdown, Collapse, Table, Modal, FloatButton } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
-import React, {} from 'react';
+import React, {useState} from 'react';
 import styles from '../styles/header.module.css';
 import {FormOutlined, UserOutlined} from '@ant-design/icons';
+import Party from './party';
 
 React.useLayoutEffect = React.useEffect;
 
@@ -64,6 +65,20 @@ const items: MenuProps['items'] = [
   ];
 
 function UserCard({ card } : any){
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
     //어떤 호출로 파티들을 받아옴
     const parties: DataType[] = [
         {
@@ -89,8 +104,14 @@ function UserCard({ card } : any){
             <Collapse>
                 <Panel header={card.title} key="1" showArrow={false}
                 extra={<span>{"메뉴: " + card.menu + " "} <UserOutlined /> {card.currentPeople} / {card.maxPeople}</span>}>
-                    <div>추가 정보: {card.content}</div>
+                    <div style={{paddingBottom: "1rem"}}>추가 정보: {card.content}</div>
                     <Table columns={columns} dataSource={parties} pagination={false}/>
+                    <Button type="primary" onClick={showModal}>
+                        그룹에 참여하기
+                    </Button>
+                    <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                        <Party />
+                    </Modal>
                 </Panel>
             </Collapse>
     );
@@ -134,6 +155,8 @@ const Main: React.FC = () => {
                 </Dropdown>
             </Space>
         </Header>
+        <FloatButton icon={<FormOutlined />} tooltip={<div>그룹 생성하기</div>} 
+        shape="square" type="primary" href="/group" description="그룹 생성"/>
         <div className={styles.pad}>
             {cards.map(card => (
                 <UserCard card={card} key={card.id}/>

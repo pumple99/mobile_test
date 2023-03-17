@@ -22,19 +22,19 @@ const columns: ColumnsType<DataType> = [
         title: '파티장',
         dataIndex: 'intraId',
         key: 'intraId',
-        render: (text) => <a>{text}</a>,
+        render: (text) => <p>{text}</p>,
     },
     {
         title: '파티 이름',
         dataIndex: 'partyTitle',
         key: 'partyTitle',
-        render: (text) => <a>{text}</a>,
+        render: (text) => <p>{text}</p>,
     },
     {
         title: '파티 인원',
         dataIndex: 'partyNum',
         key: 'partyNum',
-        render: (text) => <a>{text}</a>,
+        render: (text) => <p>{text}</p>,
     },
     {
         title: '공동 식사 여부',
@@ -46,12 +46,12 @@ const columns: ColumnsType<DataType> = [
 
 const items: MenuProps['items'] = [
     {
-      label: <a href="/login">logout</a>,
+      label: <p>hi</p>,
       key: '0',
       danger: true,
     },
     {
-      label: <a href="https://www.aliyun.com">2nd menu item</a>,
+      label: <p>hihi</p>,
       key: '1',
     },
     {

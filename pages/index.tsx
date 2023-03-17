@@ -1,4 +1,4 @@
-import { Layout, Button, Switch, Space, Dropdown, Collapse, Table, Modal, FloatButton } from "antd";
+import { Layout, Button, Switch, Space, Dropdown, Collapse, Table, Modal, FloatButton, Input } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import React, {useState} from 'react';
@@ -8,6 +8,7 @@ import Party from './party';
 
 React.useLayoutEffect = React.useEffect;
 
+const { TextArea } = Input;
 const { Panel } = Collapse;
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -62,7 +63,13 @@ const items: MenuProps['items'] = [
       label: '3rd menu item',
       key: '3',
     },
-  ];
+];
+
+function UserComment({ comment } : any){
+    return (
+        <p style={{wordBreak: "break-all"}}>{comment.intraId}: {comment.content}</p>
+    );
+}
 
 function UserCard({ card } : any){
 
@@ -100,18 +107,47 @@ function UserCard({ card } : any){
             joinable: false,
         },
     ];
+
+    const comments = [
+        {
+            id: 0,
+            intraId: "default",
+            content: "sdlkfjlsjlskjsd",
+        },
+        {
+            id: 1,
+            intraId: "default",
+            content: "sdlkfjlsjlskjsd",
+        },
+    ];
+
     return (
             <Collapse>
                 <Panel header={card.title} key="1" showArrow={false}
                 extra={<span>{"메뉴: " + card.menu + " "} <UserOutlined /> {card.currentPeople} / {card.maxPeople}</span>}>
-                    <div style={{paddingBottom: "1rem"}}>추가 정보: {card.content}</div>
+                    <Space style={{display: "flex", justifyContent: "space-between"}} direction="horizontal">
+                        <p>추가 정보:</p>
+                        <Button type="primary" onClick={showModal}>
+                            그룹에 참여하기
+                        </Button>
+                        <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                            <Party />
+                        </Modal>
+                    </Space>
+                    <p style={{wordBreak: "break-all"}}>{card.content}</p>
                     <Table columns={columns} dataSource={parties} pagination={false}/>
-                    <Button type="primary" onClick={showModal}>
-                        그룹에 참여하기
-                    </Button>
-                    <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                        <Party />
-                    </Modal>
+
+                    <Collapse ghost>
+                        <Panel header="댓글 창" key='1'>
+                            {comments.map(comment => (
+                                <UserComment comment={comment} key={comment.id}/>
+                            ))}
+                            <Space.Compact block>
+                                <TextArea placeholder="100자 제한" maxLength={100} />
+                                <Button type="primary">Submit</Button>
+                            </Space.Compact>
+                        </Panel>
+                    </Collapse>
                 </Panel>
             </Collapse>
     );
@@ -127,7 +163,7 @@ const Main: React.FC = () => {
             maxPeople: 10,
             menu: "미정",
             deliveryPrice: 3000,
-            content: "뭔가 하고 싶은 말",
+            content: "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
             available: true,
 
         },
@@ -136,9 +172,12 @@ const Main: React.FC = () => {
             title: "2.아무거나 드실 분",
             currentPeople: 6,
             maxPeople: 11,
+            menu: "맛있는 거",
+            deliveryPrice: 3000,
+            content: "1234567890",
             available: false,
         },
-    ]
+    ];
     
     return (
         <>
